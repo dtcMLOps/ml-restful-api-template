@@ -1,0 +1,28 @@
+{
+  "changelog_type": "pull_request",
+  "header_prefix": "Version:",
+  "commit_changelog": true,
+  "comment_changelog": false,
+  "include_unlabeled_changes": true,
+  "unlabeled_group_title": "Unlabeled Changes",
+  "pull_request_title_regex": "^feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert",
+  "version_regex": "v?([0-9]{1,2})+[.]+([0-9]{1,2})+[.]+([0-9]{1,2})\\s\\(\\d{1,2}-\\d{1,2}-\\d{4}\\)",
+  "group_config": [
+    {
+      "title": "Bug Fixes",
+      "labels": ["bug", "bugfix", "fix", "build", "ci", "revert"]
+    },
+    {
+      "title": "Code Improvements",
+      "labels": ["improvements", "enhancement", "style", "refactor", "perf", "test"]
+    },
+    {
+      "title": "New Features",
+      "labels": ["feat", "BREAKING CHANGE", "break"]
+    },
+    {
+      "title": "Documentation Updates",
+      "labels": ["docs", "documentation", "doc"]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+name-template: 'v$RESOLVED_VERSION 🌈'
+tag-template: 'v$RESOLVED_VERSION'
+categories:
+  - title: ":rocket: Features"
+    labels: [enhancement, feature, feat]
+  - title: ":wrench: Fixes & Refactoring"
+    labels: [bug, refactor, bugfix, fix, style, revert]
+  - title: ":package: Build System & CI/CD"
+    labels: [build, ci, testing, test, chore, refactor, perf]
+  - title: ":boom: Breaking Changes"
+    labels: [breaking, BREAKING CHANGE]
+  - title: ":pencil: Documentation"
+    labels: [documentation, docs]
+  - title: ":arrow_up: Dependencies updates"
+    labels: [dependencies]
+change-template: '- [#$NUMBER]($URL): $TITLE @$AUTHOR '
+change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
+version-resolver:
+  major:
+    labels:
+      - 'BREAKING CHANGE'
+  minor:
+    labels:
+      - 'feat'
+  patch:
+    labels:
+      - 'fix'
+  default: patch
+template: |
+
+  $CHANGES

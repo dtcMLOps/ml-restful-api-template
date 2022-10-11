@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+  app:
+    build: .
+    volumes:
+      - ./data/:/code/app/data
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    links:
+      - database
+    command: >
+      /bin/sh -c "
+        echo Waiting for database service start...;
+        while ! nc -z database 3306;
+        do
+          sleep 1;
+        done;
+        echo Connected!;
+        uvicorn app.main:app --host 0.0.0.0 --port 8000;
+      "
+  database:
+    image: mysql:5.7
+    env_file:
+      - .env
+    ports:
+      - "3306:3306"

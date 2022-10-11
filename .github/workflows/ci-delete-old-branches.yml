@@ -1,0 +1,26 @@
+name: Delete old branches
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - staging
+      - develop
+jobs:
+  housekeeping:
+    name: Delete old branches
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Run delete old branches
+        uses: beatlabs/delete-old-branches-action@v0.0.9
+        with:
+          repo_token: ${{ github.token }}
+          date: '1 months ago'
+          dry_run: false
+          delete_tags: false
+          minimum_tags: 5
+          extra_protected_branch_regex: ^(develop|staging|master)$
+          extra_protected_tag_regex: '^v.*'
+          exclude_open_pr_branches: true

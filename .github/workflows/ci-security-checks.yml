@@ -1,0 +1,67 @@
+# name: "CodeQL & OSSAR scanning"
+
+# on:
+#   push:
+#     branches: [develop, master, staging]
+#   pull_request:
+#     branches: [develop]
+#   schedule:
+#     - cron: "37 11 * * 1"
+
+# jobs:
+#   analyze:
+#     name: Analyze
+#     runs-on: ubuntu-latest
+#     permissions:
+#       actions: read
+#       contents: read
+#       security-events: write
+
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         language: ["python"]
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v2
+#       - name: Initialize CodeQL
+#         uses: github/codeql-action/init@v1
+#         with:
+#           languages: ${{ matrix.language }}
+#       - name: Autobuild
+#         uses: github/codeql-action/autobuild@v1
+#       - name: Perform CodeQL Analysis
+#         uses: github/codeql-action/analyze@v1
+
+#   OSSAR-Scan:
+#     runs-on: windows-latest
+#     steps:
+#     - name: Checkout repository
+#       uses: actions/checkout@v2
+#     - name: Run OSSAR
+#       uses: github/ossar-action@v1
+#       id: ossar
+#     - name: Upload OSSAR results
+#       uses: github/codeql-action/upload-sarif@v1
+#       with:
+#         sarif_file: ${{ steps.ossar.outputs.sarifFile }}
+
+#   checkmarx:
+#       runs-on: ubuntu-latest
+#       steps:
+#       - uses: actions/checkout@v2
+#       - name: Checkmarx CxFlow Action
+#         uses: checkmarx-ts/checkmarx-cxflow-github-action@v1.4
+#         env:
+#            CHECKMARX_TEAMS: CxServer/AB-InBev/GHQ/Analytics/MMM
+#         with:
+#           project: ${{ github.repository }}-PR
+#           team: ${{ env.CHECKMARX_TEAMS }}
+#           checkmarx_url: ${{ secrets.CHECKMARX_URL }}
+#           checkmarx_username: ${{ secrets.CHECKMARX_USERNAME }}
+#           checkmarx_password: ${{ secrets.CHECKMARX_PASSWORD }}
+#           checkmarx_client_secret: ${{ secrets.CHECKMARX_CLIENT_SECRET }}
+#           incremental: true
+#           break_build: false
+#           scanners: sast
+#           name: Checkmarx SCA Scan

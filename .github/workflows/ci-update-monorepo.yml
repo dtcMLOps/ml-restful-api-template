@@ -1,0 +1,25 @@
+name: Submodule Updates
+  push:
+    branches: [develop, staging, master]
+  pull_request:
+    branches: [develop, staging, master]
+
+jobs:
+  build:
+    name: Submodule update
+    runs-on: ubuntu-latest
+    env:
+      PARENT_REPOSITORY: <mono repo name> 
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: run action
+        id: run_action
+        uses: releasehub-com/github-action-create-pr-parent-submodule@v1
+        with:
+          github_token: ${{ secrets.GITHB_ABIA_TOKEN }}
+          parent_repository: ${{ env.PARENT_REPOSITORY }}
+          checkout_branch:  ${{ github.ref }}
+          pr_against_branch:  ${{ github.ref }}
+          owner: ${{ github.repository_owner }}

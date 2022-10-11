@@ -1,0 +1,18 @@
+name: Check branch naming convention
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened]
+jobs:
+  check_branch_name:
+    runs-on: ubuntu-latest
+    name: Check branches are tagged with keyword
+    steps:
+      - uses: AlbertHernandez/branch-name-action@v1.0.2
+        with:
+          branch_pattern: 'feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert'
+          comment_for_invalid_branch_name: 'Add any keyword in branch name: feat,fix,docs,style,refactor,perf,test,build,ci,chore,revert!'
+          fail_if_invalid_branch_name: 'true'
+          ignore_branch_pattern: 'master|develop|staging'
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

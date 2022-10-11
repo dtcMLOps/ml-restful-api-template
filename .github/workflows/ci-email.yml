@@ -1,0 +1,31 @@
+name: Email notification
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.8' 
+      - run: |
+            pip install markdown pymdown-extensions
+            python convert.py
+      - name: Send mail
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{secrets.MAIL_USERNAME}}
+          password: ${{secrets.MAIL_PASSWORD}}
+          subject: Github Actions job result
+          to: pandalearnstocode@gmail.com,shekhar.devanshee@gmail.com
+          from: Aritra Biswas
+          secure: true
+          html_body: file://release.html
+          convert_markdown: false
+          content_type: text/html
+          ignore_cert: true
+          priority: high

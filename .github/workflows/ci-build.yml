@@ -1,0 +1,57 @@
+# name: Docker build images
+# on:
+#   push:
+#     branches:
+#       - develop
+#   workflow_dispatch:
+# jobs:
+#     build-and-deploy:
+#         runs-on: ubuntu-latest
+#         steps:
+#           - name: 'Checkout GitHub Action'
+#             uses: actions/checkout@main
+#           - name: 'Login via Azure CLI'
+#             uses: azure/login@v1
+#             with:
+#               creds: ${{ secrets.AZURE_CREDENTIALS }}                   # Make sure azure credentials is stored in GitHub secrets
+#           - name: Get docker image version
+#             id: getbuildversion                                         # Make sure VERSION file has the latest version number
+#             run:  |
+#               MAJOR=$(cat VERSION | cut -d . -f 1)
+#               MINOR=$(cat VERSION | cut -d . -f 2)
+#               PATCH=$(cat VERSION | cut -d . -f 3)
+#               VERSION="v${MAJOR}.${MINOR}.${PATCH}"
+#               echo "::set-output name=version::${VERSION}"
+#           - name: 'Azure Key Vaults'
+#             uses: Azure/get-keyvault-secrets@v1
+#             with:
+#               keyvault: <UPDATE AKV NAME HERE>                          # "abi-mt-mroi-gb-dev-akv"
+#               secrets: <UPDATE SPN CLIENT ID, UPDATE SPN CLIENT SECRET> # 'acr-mt-mroi-dev-spn-clientid, acr-mt-mroi-dev-spn-clientsecret'
+#             id: myGetSecretAction
+#           - name: 'Build  image'
+#             uses: azure/docker-login@v1
+#             with:
+#               login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}        # Store REGISTRY_LOGIN_SERVER, IMAGE_NAME in github secrets
+#               username: ${{ steps.myGetSecretAction.outputs.acr-mt-mroi-dev-spn-clientid }}
+#               password: ${{ steps.myGetSecretAction.outputs.acr-mt-mroi-dev-spn-clientsecret }}
+#           - run: |
+#               docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ secrets.IMAGE_NAME }}:${{ steps.getbuildversion.outputs.version }}
+#               docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ secrets.IMAGE_NAME }}:latest
+#           - name: Run Snyk to check Docker image for vulnerabilities
+#             continue-on-error: true
+#             uses: snyk/actions/docker@master
+#             env:
+#               SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}                      # Store SNYK_TOKEN in GitHub secrets
+#             with:
+#               image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ secrets.IMAGE_NAME }}:latest
+#               args: --file=Dockerfile
+#               command: monitor
+#           - name: 'Push image'
+#             uses: azure/docker-login@v1
+#             with:
+#               login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+#               username: ${{ steps.myGetSecretAction.outputs.acr-mt-mroi-dev-spn-clientid }}
+#               password: ${{ steps.myGetSecretAction.outputs.acr-mt-mroi-dev-spn-clientsecret }}
+#           - run: |
+#               docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ secrets.IMAGE_NAME }}:${{ steps.getbuildversion.outputs.version }}
+#               docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ secrets.IMAGE_NAME }}:latest

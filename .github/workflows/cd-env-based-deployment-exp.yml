@@ -1,0 +1,57 @@
+name: CI + CD
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+  workflow_dispatch:
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+      - name: Extract tags
+        id: prep
+        run: |
+          echo ::set-output name=hash_value::${{ github.sha }}
+          echo ::set-output name=branch_name::${{ steps.extract_branch.outputs.branch }}
+          echo ::set-output name=docker_image::${{ secrets.DOCKER_USERNAME }}/${GITHUB_REPOSITORY#*/}
+  DeployDev:
+    name: Deploy to Dev
+    if: github.event.ref == 'refs/heads/develop'
+    needs: [Build]
+    runs-on: ubuntu-latest
+    environment:
+      name: development
+      url: 'http://dev.myapp.com'
+    steps:
+      - name: Deploy
+        run: echo I am deploying!
+  DeployStaging:
+    name: Deploy to Staging
+    if: github.event.ref == 'refs/heads/staging'
+    needs: [Build]
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: 'http://test.myapp.com'
+    steps:
+      - name: Deploy
+        run: echo I am deploying!
+  DeployProd:
+    name: Deploy to Production
+    if: github.event.ref == 'refs/heads/master'
+    needs: [DeployStaging]
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: 'http://www.myapp.com'
+    steps:
+      - name: Deploy
+        run: echo I am deploying!

@@ -1,0 +1,7 @@
+include *.rst
+include *.py
+include *.yml
+include Makefile
+include .gitignore
+include .coveragerc
+include *.md
